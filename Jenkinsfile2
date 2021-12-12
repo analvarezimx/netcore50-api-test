@@ -3,25 +3,26 @@ import groovy.json.JsonSlurper
 node {
     ws('netcore') {
         stage('SCM') {
-            git branch: 'main', url: 'https://github.com/Stywar/netcore50-api-test'           
+            git branch: 'main', url: 'https://github.com/analvarezimx/netcore50-api-test'           
         }
         stage('Build') {
             dotnet_build();
         }
         stage('Docker') {
-              bat(script: 'docker login --username %UsernameDockerHub% --password %PasswordDocker%', returnStdout: true);
+              //bat(script: 'docker login --username %UsernameDockerHub% --password %PasswordDocker%', returnStdout: true);
               bat(script: 'docker build -t antony0618/servicenet5 .', returnStdout: true);
               bat(script: 'docker push antony0618/servicenet5', returnStdout: true);            
         }
         stage('Deploy Dev') {
-              bat(script: 'az login --service-principal --username 60445a5a-4c7d-404e-96a0-0d5c83c4978f --password wP_yGAcZKPUZQBTd.ezSLAzpNAzY-ZcZ6l --tenant 74343d69-5375-4c7a-8cc9-08986488c964', returnStdout: true);
-              bat(script: 'az account set --subscription "StywarV"', returnStdout: true);
-              bat(script: 'az container restart --name micro5testservice --resource-group aforo255Devops', returnStdout: true);       
+               bat(script: 'az login --service-principal --username ad02d309-a863-455f-a52b-56aa02dfc147 --password 1-iNT.wbmf9ArvCI8W25KNUwn~52Un375J --tenant e44f9206-0a62-4b88-a868-cb11cb8e857b', returnStdout: true);
+               bat(script: 'az account set --subscription 631ff6e9-7a27-4d3b-b912-ed7f1332314e', returnStdout: true);
+               bat(script: 'az container restart --name ci --resource-group gruporecurso1', returnStdout: true);    
         }
         stage('Deploy Prod') {
-             bat(script: 'az aks get-credentials --resource-group  aforo255Devops  --name cluster-Devops & kubectl config get-contexts --kubeconfig=%KUBE_PATH_CONFIG%', returnStdout: true);
-             bat(script: 'kubectl config use-context cluster-Devops --kubeconfig=%KUBE_PATH_CONFIG%', returnStdout: true);
-             bat(script: 'Kubectl delete --all pods --kubeconfig=%KUBE_PATH_CONFIG% & kubectl apply -f k8s.yml --kubeconfig=%KUBE_PATH_CONFIG%', returnStdout: true);
+                bat(script: 'az aks get-credentials --resource-group gruporecurso1 --name anacclusterkubernetes1 & kubectl config get-contexts --kubeconfig=%KUBE_PATH_CONFIG%', returnStdout: true);
+                bat(script: 'kubectl config use-context anacclusterkubernetes1 --kubeconfig=%KUBE_PATH_CONFIG%', returnStdout: true);
+                bat(script: 'Kubectl delete --all pods --kubeconfig=%KUBE_PATH_CONFIG% & kubectl apply -f k8s.yml --kubeconfig=%KUBE_PATH_CONFIG%', returnStdout: true);
+
         }        
     }
 }
